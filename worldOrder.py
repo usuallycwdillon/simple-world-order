@@ -8,6 +8,10 @@ import datetime as dtg
 import agents
 import environment
 
+debuging = False
+verbosity = False
+timestamp = None
+
 def run():
     '''
     Following the canonical theory, the Fast Process is:
@@ -32,18 +36,32 @@ def run():
     '''
     global timestamp = getTimeStamp()
 
+
+
     ## Use a geometric distribution to assert the probability that any attempt to make peace, treat, etc will result in
     #  success. http://www.math.wm.edu/~leemis/chart/UDR/PDFs/Geometric.pdf
     #  :: where the pdf is: f(x) = p(1-p)^x, and the cdf where P(X ≤ x) is: F(x) = 1-(1-p)^(x+1)
 
 
-def setupWorld()
-    global debug = False
-    global verbose = True
 
-    # Create environment
 
-    # Create agents
+
+def setupWorld(): # canonical state K
+
+    ## Create environment
+    #  Create a field of 10,000 Lands
+    #  Each Land gets 1, 2, or 3 Populations, which have culture, ideology, religion and heritage.
+
+
+    ## Create agents
+    #  Create 1 Church with religion 'A'
+    #  Create 5 Empires to represent Sweden, England, France, Spain and the Holy Roman Empire
+    #  Create 100 other kingdoms
+    ## Assign lands to kingdoms, empires; not the church (for simplicity)
+    #  Assign 60 kingdoms to HRE as suzerent, 20 (random share) to other empires; 20 are independent
+
+
+
 
 
 

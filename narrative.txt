@@ -36,11 +36,11 @@ With every tick of the clock, leaders look around their territories and inject s
 
 With every tick of the clock, leaders assess the level of interference from other leaders and decide whether to attack, defend, or interfere in that other kingdom. They may also take action to improve satisfaction among their own territories. Attacks come from competing kingdoms, not from allies (except in the case of misalignment with religion).
 
-Challenges come along in the form of foreign intervention, natural disaster, and wars. War has a cost in addition to losing the productivity of a territory where battle is occuring.
+Challenges come along in the form of foreign intervention, natural disaster, and wars. War has a cost in addition to losing the productivity of a territory where battle is occurring.
 
 Canonical theory rules the process by which polities respond to challenges.
 
-Rulers can make alliances with any other kingdom that shares a common enemy or has similar cultural, relgious, or historical tradtition.
+Rulers can make alliances with any other kingdom that shares a common enemy or has similar cultural, religious, or historical tradition.
 
 Rulers can treat with any other kingdom with which they are at war or have an adversarial relationship so long as they have access. They get access by several turns of mutual diplomacy or through common institutions.
 

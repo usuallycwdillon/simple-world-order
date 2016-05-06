@@ -10,8 +10,8 @@ class Agent(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, type = ''):
-        self.type = type
-        self.has_suzerns = []
+        self.pol_type = type
+        self.has_suzerents = []
         self.has_tributes = []
         self.has_lands = []
 
@@ -25,7 +25,11 @@ class Agent(object):
     def treatWith(self, other):
         pass
 
-    def getType(self):
+    @property
+    def pol_type(self):
+        return self.pol_type
+    @
+    def po(self):
         return self.type
 
     def setType(self, newType):

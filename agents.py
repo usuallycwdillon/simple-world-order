@@ -15,40 +15,35 @@ class Agent(object):
         self.has_tributes = []
         self.has_lands = []
 
-    def deliberatesWith(self, other, temp):
-        self.links[other] = temp
-        other.links[self] = temp
-
-    def warWith(self, other):
-        pass
-
-    def treatWith(self, other):
-        pass
-
     @property
     def pol_type(self):
         return self.pol_type
-    @
-    def po(self):
-        return self.type
-
-    def setType(self, newType):
-        self.type = newType
+    @pol_type.setter
+    def pol_type(self, newType):
+        self.pol_type = newType
 
 
 class Kingdom(Agent):
     """
-    :param type
+    :param pol_type
     """
     def __init__(self, type):
-        self.type = 'Kingdom'
+        self.pol_type = 'Kingdom'
 
 
 class Empire(Agent):
     """
-    :param type
+    :param pol_type
     """
     def __init__(self, type):
-        self.type = 'Empire'
+        self.pol_type = 'Empire'
+
+class Church(Agent):
+    """
+    :param pol_type
+    """
+    def __init__(self):
+        self.pol_type = 'Church'
+
 
 

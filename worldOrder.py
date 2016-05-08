@@ -6,11 +6,20 @@ Created 29 April 2016
 __author__ = 'usuallycwdillon@github.io'
 import datetime as dtg
 import agents
-import environment
+from environment import *
+from agents import *
 
+# experiment controls
 debuging = False
-verbosity = False
+verbosity = True
 timestamp = None
+
+# configurations
+populations_set = set()
+new_pops = 1
+LANDS = 20   # the number of hex lands on one side of the hex world
+world = []
+
 
 def run():
     '''
@@ -34,13 +43,25 @@ def run():
     This process collects (or not) more polities until all (existing) polities are involved in compatible institutions or
     all under the same institution: The emergent world order.
     '''
-    global timestamp = getTimeStamp()
+    timestamp = getTimeStamp()
+    print timestamp
+    print len(world)
+    world_pop = 0
+    for l in world:
+        for p in l.has_populations:
+            world_pop += p.size
 
+    print "The world population is " + str(world_pop) + ", so we know the world exists and that it's populated."
+
+    test = random.choice(world)
+    print "The land at ", test.location, " has neighbors at: "
+    for n in test.neighbors:
+        print n
 
 
     ## Use a geometric distribution to assert the probability that any attempt to make peace, treat, etc will result in
     #  success. http://www.math.wm.edu/~leemis/chart/UDR/PDFs/Geometric.pdf
-    #  :: where the pdf is: f(x) = p(1-p)^x, and the cdf where P(X ≤ x) is: F(x) = 1-(1-p)^(x+1)
+    #  :: where the pdf is: f(x) = p(1-p)^x, and the cdf where P(X <= x) is: F(x) = 1-(1-p)^(x+1)
 
 
 
@@ -48,9 +69,37 @@ def run():
 
 def setupWorld(): # canonical state K
 
-    ## Create environment
-    #  Create a field of 10,000 Lands
-    #  Each Land gets 1, 2, or 3 Populations, which have culture, ideology, religion and heritage.
+    ## Create environment (includes populating lands)
+    global populations_set
+
+    POPS = int(2.1 * hex_rate(LANDS))
+
+    for p in range(POPS):
+        this_pop = Population("ppl" + str(p))
+        populations_set.add(this_pop)
+
+    #  Create a world out of LANDS Lands
+    side = -1 * LANDS # The world is hexagonal with sides ...
+    for lx in range(side, -(side-1), 1):
+        dy = -1 * lx
+        if lx < 0:
+            for ly in range(dy, -1, -1):
+                land = Land(lx, ly)
+                addPopulations(land)    # Take populations from the list and put them on lands
+                world.append(land)         # Add the lands to the world
+        else:
+            for ly in range(dy, 1, 1):
+                land = Land(lx, ly)
+                addPopulations(land)
+                world.append(land)
+
+    # After the lands are created, tell them to go find their neighbors
+    # for l in world:
+    #     my_neighbors = []
+    #     for d in l.directions:
+    #         n = filter(lambda l: l.x + d[0] and l.y + d[1] and l.z + d[2], world)[0]
+    #         my_neighbors.append(n)
+    #     l.neighbors = my_neighbors
 
 
     ## Create agents
@@ -63,6 +112,23 @@ def setupWorld(): # canonical state K
 
 
 
+def addPopulations(l):
+    '''
+    Each land gets between 1 and 3 populations from (the bottom of) the populations list.
+    :param l:
+    :return: None
+    '''
+    global populations_set
+    global new_pops
+    s = random.randint(1, 3)
+    for si in range(s):
+        if len(populations_set) > 0:
+            this_pop = populations_set.pop()
+            l.has_populations = this_pop
+        else:
+            if verbosity: print 'Land at ' + " : ".join(l.location) + ' added a new population.'
+            l.has_populations = Population("ppl" + str(POPS + new_pops))
+            new_pops += 1
 
 
 def getTimeStamp(detail = 'short'):
@@ -72,10 +138,18 @@ def getTimeStamp(detail = 'short'):
         dt += "_" + str(timestamp.year) + str("%02d"%timestamp.month) + str("%02d"%timestamp.day)
     return dt
 
-
+def hex_rate(s):
+    r = range(s, 2*s)
+    n = sum(r + r[0:-1])
+    return n
 
 
 
 if __name__ == "__main__":
     setupWorld()
     run()
+
+
+
+
+

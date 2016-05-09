@@ -72,10 +72,10 @@ class Population(object):
     def __init__(self, identifier):
         self.name = identifier
         self.size = int(random.lognormvariate(8.5, .5))
-        self.religion = random.choice(['A', 'B', 'C', 'D'])
-        self.heritage = random.choice(['A', 'B', 'C', 'D'])
-        self.ideology = random.choice(['A', 'B', 'C', 'D'])
-        self.culture = random.choice(['A', 'B', 'C', 'D'])
+        self._religion = random.choice(['A', 'B', 'C', 'D'])
+        self._heritage = random.choice(['A', 'B', 'C', 'D'])
+        self._ideology = random.choice(['A', 'B', 'C', 'D'])
+        self._culture = random.choice(['A', 'B', 'C', 'D'])
 
 class Diet(object):
     def __init__(self):

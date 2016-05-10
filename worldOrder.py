@@ -1,28 +1,18 @@
 #! /usr/bin/env python
+import settings
+
+from environment import *
+from agents import *
+
 '''
 Created 29 April 2016
 
 '''
 __author__ = 'usuallycwdillon@github.io'
-import datetime as dtg
-from environment import *
-from agents import *
-
-# experiment controls
-debuging = False
-verbosity = True
-timestamp = None
-
-# configurations
-populations_set = set()
-new_pops = 1
-LANDS = 33   # the number of hex lands on one side of the hex world; 33 --> 1189 lands
-world = []
-global all_agents, kingdoms, empires, church
 
 
-def run():
-    global church, empires, kingdoms, all_agents
+def run(ticks):
+    ticks = ticks
     '''
     Following the canonical theory, the Fast Process is:
     K: kingdoms, empires, the Church, etc (polities) exist --> C or ~C
@@ -44,27 +34,27 @@ def run():
     This process collects (or not) more polities until all (existing) polities are involved in compatible institutions or
     all under the same institution: The emergent world order.
     '''
-    timestamp = getTimeStamp()
+    timestamp = settings.getTimeStamp()
     print timestamp
-    print len(world)
+    print len(settings.world)
     world_pop = 0
-    for l in world:
+    for l in settings.world:
         for p in l.has_populations:
             world_pop += p.size
 
     print "The world population is " + str(world_pop) + ", so we know the world exists and that it's populated."
 
-    test = random.choice(world)
+    test = random.choice(settings.world)
     print "The land at ", test.location, " has neighbors at: "
     for n in test.neighbors:
-        print n
+        print n.location_string
 
-    for em in empires:
+    for em in settings.empires:
         print '\n', em.name
 
     print "The Church has lands:"
-    for l in church.lands:
-        print l.location
+    for l in settings.church.lands:
+        print l.location_string
 
 
     ## Use a geometric distribution to assert the probability that any attempt to make peace, treat, etc will result in
@@ -75,109 +65,63 @@ def run():
 
 def setupWorld(): # canonical state K
 
-    ## Create environment (includes populating lands)
-    global populations_set, church, empires, kingdoms, all_agents
-
-    POPS = int(2.1 * hex_rate(LANDS))
-
-    for p in range(POPS):
+    for p in range(settings.POPS):
         this_pop = Population("ppl" + str(p))
-        populations_set.add(this_pop)
+        settings.populations_set.add(this_pop)
 
     #  Create a world out of LANDS Lands
-    side = -1 * LANDS # The world is hexagonal with sides LANDS number of hexes long
+    side = -1 * settings.LANDS # The world is hexagonal with sides LANDS number of hexes long
     for lx in range(side, -(side-1), 1):
         dy = -1 * lx
         if lx < 0:
             for ly in range(dy, -1, -1):
                 land = Land(lx, ly)
-                addPopulations(land)    # Take populations from the list and put them on lands
-                world.append(land)      # Add the lands to the world
+                land.addPopulations()    # Take populations from the list and put them on lands
+                settings.world.append(land)      # Add the lands to the world
         else:
             for ly in range(dy, 1, 1):
                 land = Land(lx, ly)
-                addPopulations(land)
-                world.append(land)
+                land.addPopulations()
+                settings.world.append(land)
+
+    # OK to instantiate a disposable copy of the world for processing distribution of lands
+    settings.free_world = list(settings.world)
 
     ## Create agents
     #  Create 1 Church, 10% of lands, religion 'A'
-    church_lands = int(LANDS * 0.1)
-    church = Church()
-    addLands(church, church_lands)
-
-
-    # land_distribution
+    settings.church = Church()
+    settings.church.addLands(settings.church_size)
 
     #  Create 5 Empires to represent Sweden, England, France, Spain and the Holy Roman Empire (HRE)
     empire_names = ['Not_Sweden', 'Not_France', 'Not_Spain', 'Not_England', 'Not_HRE']
-    empires = [Kingdom(n, 'Empire') for n in empire_names]
+    settings.empires = [Kingdom(n, 'Empire') for n in empire_names]
+
     #  Create 100 other kingdoms
+    kingdom_names = ["kingdom" + str(x) for x in range(1, 101, 1)]
+    settings.kingdoms = [Kingdom(n, 'Kingdom') for n in kingdom_names]
 
     ## Assign lands to kingdoms, empires
+    for k in settings.kingdoms:
+        k.addLands(random.choice([1,2]))
+
+    for em in settings.empires[0:-1]:
+        em.addLands(random.choice(settings.emp_sizes))
+
+    settings.empires[-1].addLands(0) # indicates that HRE gets the rest of the free world
 
     #  Assign 60 kingdoms to HRE as suzerent, 20 (random share) to other empires; 20 are independent
-
-
-def addLands(l, n):
-    first = random.choice(world)
-    these_lands = [first]
-    world.remove(first)
-    n -= 1
-    for nn in range(n):
-        try:
-            here = random.choice(these_lands)
-            there = random.choice(here.neighbors)
-            if there in world and there not in l.lands:
-                these_lands.append(there)
-                world.remove(there)
-            else:
-                these_lands.append(any(w for w in world if w.x == there[0] and w.y == there[1]))
-                nn -= 1
-        except:
-            if len(world) == 0:
-                print 'There is not enough land in the world!'
-                break
-            else:
-                these_lands.append(there.neighbors)
-            pass
-    l.lands.append(these_lands)
-
-def addPopulations(l):
-    '''
-    Each land gets between 1 and 3 populations from (the bottom of) the populations list.
-    :param l:
-    :return: None
-    '''
-    global populations_set
-    global new_pops
-    s = random.randint(1, 3)
-    for si in range(s):
-        if len(populations_set) > 0:
-            this_pop = populations_set.pop()
-            l.has_populations = this_pop
-        else:
-            if verbosity: print 'Land at ' + " : ".join(l.location) + ' added a new population.'
-            l.has_populations = Population("ppl" + str(POPS + new_pops))
-            new_pops += 1
-
-
-def getTimeStamp(detail = 'short'):
-    timestamp = dtg.datetime.now()
-    dt = str("%02d"%timestamp.hour) + str("%02d"%timestamp.minute) + "." + str("%02d"%timestamp.second) + "EDT"
-    if detail != 'short':
-        dt += "_" + str(timestamp.year) + str("%02d"%timestamp.month) + str("%02d"%timestamp.day)
-    return dt
-
-def hex_rate(s):
-    r = range(s, 2*s)
-    n = sum(r + r[0:-1])
-    return n
-
+    for i in range(80):
+        for k in settings.kingdoms:
+            k.suzerent = random.choice(settings.empires)
+    for k in settings.kingdoms:
+        if k.religion == 'A':
+            k.suzerent = settings.church
 
 
 if __name__ == "__main__":
+    settings.init()
     setupWorld()
-    run()
+    run(2400) # number of ticks. if tick = 1 month, then 200 years = 2400
 
 
 

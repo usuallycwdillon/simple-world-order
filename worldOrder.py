@@ -15,22 +15,31 @@ def run(ticks):
     ticks = ticks
     '''
     Following the canonical theory, the Fast Process is:
-    K: kingdoms, empires, the Church, etc (polities) exist --> C or ~C
-        ~C: No change (or not enough change) occurs to cause conflict between polities; next step
-       C: Conflict (internal or external) occurs
+    K: kingdoms, empires, the Church, etc (polities) exist
+
+    --> C or ~C
+       ~C: No change (or not enough change) occurs to cause conflict between polities; next step
+        C: Conflict (internal or external) occurs
+
     --> Need for (each) Agent to (individually) respond to conflict is recognized or not; N or ~N
-        ~N: Conflict affects Agent, their Lands, the Populations on those Lands
-         N: Agent must choose whether to do something about the Change/Conflict
+       ~N: Conflict affects Agent, their Lands, the Populations on those Lands
+        N: Agent must choose whether to do something about the Change/Conflict
+
     --> Agent selects 0 or more responses from their behavior list
-        ~U: Agent does not undertake any action, next step is P or ~P
-         --> ~P: The conflict resolves itself; back to K
-              P: The conflict continues
-         U: each Agent offers/accepts to end conflict (add or eliminate behaviors, reduce army, give land or resources)
-    --> ~P: The agreement does not lead to peace; back to C
-         P: Peace through changes at U;
-            This creates a new Institution or Agent may join an existing Institution, which requires behavior change and resources
-    --> ~S: The Institution fails (party behaviors not eliminated, consumes too many resources, etc)
-         S: Institution persists
+       ~U: Agent does not undertake any action, next step is P or ~P
+        --> ~P: The conflict resolves itself; back to K
+             P: The conflict continues
+        U: each Agent offers/accepts to end conflict (add or eliminate behaviors, reduce army, give land or resources)
+
+    --> P or ~P
+       ~P: The agreement does not lead to peace; back to C
+        P: Peace through changes at U;
+    **     This creates a new Institution or Agent may join an existing Institution, which requires behavior change and resources
+
+    --> S or ~S
+       ~S: The Institution fails (party behaviors not eliminated, consumes too many resources, etc)
+        S: Institution persists
+
     This process collects (or not) more polities until all (existing) polities are involved in compatible institutions or
     all under the same institution: The emergent world order.
     '''
@@ -42,19 +51,28 @@ def run(ticks):
         for p in l.has_populations:
             world_pop += p.size
 
+    print "At timestamp:", timestamp
     print "The world population is " + str(world_pop) + ", so we know the world exists and that it's populated."
+    print "There are " + str(len(settings.world)) + " patches of land in the world."
+    print "\nFollowing the canonical theory, the world is in state K: kingdoms exist (though, without a 'world order')."
 
-    test = random.choice(settings.world)
-    print "The land at ", test.location, " has neighbors at: "
-    for n in test.neighbors:
-        print n.location_string
+    # test = random.choice(settings.world)
+    # print "The land at ", test.location, " has neighbors at: "
+    # for n in test.neighbors:
+    #     print n.location_string
+    #
+    # for em in settings.empires:
+    #     print '\n', em.name
+    #
+    # print "The Church has lands:"
+    # for l in settings.church.lands:
+    #     print l.location_string
 
-    for em in settings.empires:
-        print '\n', em.name
+    '''
+    Agents look for incompatiblities with neighbors and threats. T
+    '''
 
-    print "The Church has lands:"
-    for l in settings.church.lands:
-        print l.location_string
+
 
 
     ## Use a geometric distribution to assert the probability that any attempt to make peace, treat, etc will result in
@@ -63,7 +81,7 @@ def run(ticks):
 
 
 
-def setupWorld(): # canonical state K
+def setupWorld(): # start at canonical state K
 
     for p in range(settings.POPS):
         this_pop = Population("ppl" + str(p))
@@ -117,13 +135,11 @@ def setupWorld(): # canonical state K
         if k.religion == 'A':
             k.suzerent = settings.church
 
+    all_agents = [settings.church]
+    [all_agents.append(k) for k in settings.kingdoms]
+
 
 if __name__ == "__main__":
     settings.init()
     setupWorld()
     run(2400) # number of ticks. if tick = 1 month, then 200 years = 2400
-
-
-
-
-

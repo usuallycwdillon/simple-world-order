@@ -2,3 +2,4 @@
 *.csv
 .idea/
 *.sublime-workspace
+*.pyc

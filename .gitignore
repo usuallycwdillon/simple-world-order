@@ -1,0 +1,4 @@
+*.mov
+*.csv
+.idea/
+*.sublime-workspace

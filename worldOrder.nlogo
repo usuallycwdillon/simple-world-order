@@ -82,7 +82,7 @@ to make-movie
   movie-grab-interface
   while [going? = True]
     [ go
-      movie-grab-view
+      ;;movie-grab-view
       movie-grab-interface 
       ]
 
@@ -560,7 +560,7 @@ initial-prob-war
 initial-prob-war
 0
 10
-10
+5
 .1
 1
 NIL
@@ -575,7 +575,7 @@ num-states
 num-states
 5
 40
-40
+30
 5
 1
 NIL
@@ -718,7 +718,7 @@ effect
 effect
 .001
 .02
-0.001
+0.005
 .001
 1
 NIL
